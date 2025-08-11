@@ -2,7 +2,7 @@ package com.demo.journalApp.Entity;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 public class Journal {
@@ -11,6 +11,7 @@ public class Journal {
     private Long id;
     private String title;
     private String content;
+    private LocalDateTime date;
 
     public Long getId() {
         return id;
@@ -35,4 +36,13 @@ public class Journal {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
 }

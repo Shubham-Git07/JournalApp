@@ -5,12 +5,12 @@ import com.demo.journalApp.Service.JournalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/journal")
 public class JournalEntryController {
-
 
     private final JournalService journalService;
 
@@ -23,8 +23,14 @@ public class JournalEntryController {
         return journalService.findAllJournal();
     }
 
+    @GetMapping("/getJournalById/{id}")
+    public Journal getJournalById(@PathVariable Long id){
+        return journalService.findJournalById(id);
+    }
+
     @PostMapping("/createJournal")
     public Journal createNewJournal(@RequestBody Journal journal){
+        journal.setDate(LocalDateTime.now());
         return journalService.createNewJournal(journal);
     }
 
@@ -37,4 +43,5 @@ public class JournalEntryController {
     public void deleteJournal(@PathVariable Long id){
          journalService.deleteJournal(id);
     }
+
 }
