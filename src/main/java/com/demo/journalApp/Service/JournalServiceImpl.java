@@ -28,6 +28,7 @@ public class JournalServiceImpl implements JournalService {
     }
 
     public void createNewJournal(Journal journal) {
+        journal.setDate(LocalDateTime.now());
         journalRepository.save(journal);
     }
 
@@ -35,7 +36,6 @@ public class JournalServiceImpl implements JournalService {
     public void updateJournal(Long id, Journal journal) {
         Journal existingJournal = journalRepository.findById(id)
                 .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + " not found"));
-
         existingJournal.setTitle(journal.getTitle());
         existingJournal.setContent(journal.getContent());
         existingJournal.setDate(LocalDateTime.now());

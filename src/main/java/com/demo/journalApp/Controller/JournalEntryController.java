@@ -23,7 +23,7 @@ public class JournalEntryController {
     public ResponseEntity<List<Journal>> findAllJournal() {
         List<Journal> journals = journalService.findAllJournal();
         if (journals.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return ResponseEntity.ok(journals);
     }
@@ -37,7 +37,6 @@ public class JournalEntryController {
     @PostMapping("/createJournal")
     public ResponseEntity<Journal> createNewJournal(@RequestBody Journal journal) {
         try {
-            journal.setDate(LocalDateTime.now());
             journalService.createNewJournal(journal);
             return new ResponseEntity<>(journal, HttpStatus.CREATED);
         } catch (Exception e) {
