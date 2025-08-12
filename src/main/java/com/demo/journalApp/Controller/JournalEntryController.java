@@ -2,7 +2,8 @@ package com.demo.journalApp.Controller;
 
 import com.demo.journalApp.Entity.Journal;
 import com.demo.journalApp.Service.JournalService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -19,29 +20,41 @@ public class JournalEntryController {
     }
 
     @GetMapping("/getAllJournal")
-    public List<Journal> findAllJournal(){
-        return journalService.findAllJournal();
+    public ResponseEntity<List<Journal>> findAllJournal() {
+        List<Journal> journals = journalService.findAllJournal();
+        if (journals.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(journals);
     }
 
     @GetMapping("/getJournalById/{id}")
-    public Journal getJournalById(@PathVariable Long id){
-        return journalService.findJournalById(id);
+    public ResponseEntity<Journal> getJournalById(@PathVariable Long id) {
+        Journal journal = journalService.findJournalById(id);
+        return ResponseEntity.ok(journal);
     }
 
     @PostMapping("/createJournal")
-    public Journal createNewJournal(@RequestBody Journal journal){
-        journal.setDate(LocalDateTime.now());
-        return journalService.createNewJournal(journal);
+    public ResponseEntity<Journal> createNewJournal(@RequestBody Journal journal) {
+        try {
+            journal.setDate(LocalDateTime.now());
+            journalService.createNewJournal(journal);
+            return new ResponseEntity<>(journal, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/updateJournal/{id}")
-    public Journal updateJournal(@PathVariable Long id, @RequestBody Journal journal){
-        return journalService.updateJournal(id, journal);
+    public ResponseEntity<Journal> updateJournal(@PathVariable Long id, @RequestBody Journal journal) {
+        journalService.updateJournal(id, journal);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteJournal/{id}")
-    public void deleteJournal(@PathVariable Long id){
-         journalService.deleteJournal(id);
+    public ResponseEntity<?> deleteJournal(@PathVariable Long id) {
+        journalService.deleteJournal(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

@@ -10,9 +10,9 @@ public interface JournalService {
 
     Journal findJournalById(Long id);
 
-    Journal createNewJournal(Journal journal);
+    void createNewJournal(Journal journal);
 
-    Journal updateJournal(Long id, Journal journal);
+    void updateJournal(Long id, Journal journal);
 
     void deleteJournal(Long id);
 }

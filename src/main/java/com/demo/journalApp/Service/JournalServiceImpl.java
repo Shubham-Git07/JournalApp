@@ -22,24 +22,24 @@ public class JournalServiceImpl implements JournalService {
         return journalRepository.findAll();
     }
 
-    public Journal findJournalById(Long id){
+    public Journal findJournalById(Long id) {
         return journalRepository.findById(id)
-                .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + "not found"));
+                .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + " not found"));
     }
 
-    public Journal createNewJournal(Journal journal) {
-        return journalRepository.save(journal);
+    public void createNewJournal(Journal journal) {
+        journalRepository.save(journal);
     }
 
     @Override
-    public Journal updateJournal(Long id, Journal journal) {
+    public void updateJournal(Long id, Journal journal) {
         Journal existingJournal = journalRepository.findById(id)
                 .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + " not found"));
 
         existingJournal.setTitle(journal.getTitle());
         existingJournal.setContent(journal.getContent());
         existingJournal.setDate(LocalDateTime.now());
-        return journalRepository.save(existingJournal);
+        journalRepository.save(existingJournal);
     }
 
     @Override
@@ -48,6 +48,5 @@ public class JournalServiceImpl implements JournalService {
                 .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + " not found"));
         journalRepository.deleteById(existingJournal.getId());
     }
-
 
 }
