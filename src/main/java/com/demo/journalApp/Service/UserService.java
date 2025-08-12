@@ -7,5 +7,14 @@ import org.w3c.dom.stylesheets.LinkStyle;
 import java.util.List;
 
 public interface UserService {
-    List<User> getAllUsers();
+    List<User> findAllUsers();
+
+    User findUserById(Long id);
+
+    void createNewUser(User user);
+
+    void updateUserById(Long id, User user);
+
+    void deleteUserById(Long id);
+
 }
