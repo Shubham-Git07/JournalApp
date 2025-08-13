@@ -2,12 +2,13 @@ package com.demo.journalApp.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.stereotype.Indexed;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "users")
 public class User {
     @Id

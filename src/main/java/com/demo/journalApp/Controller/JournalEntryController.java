@@ -1,12 +1,13 @@
 package com.demo.journalApp.Controller;
 
 import com.demo.journalApp.Entity.Journal;
+import com.demo.journalApp.Entity.User;
 import com.demo.journalApp.Service.JournalService;
+import com.demo.journalApp.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -15,13 +16,17 @@ public class JournalEntryController {
 
     private final JournalService journalService;
 
-    public JournalEntryController(JournalService journalService) {
+    private final UserService userService;
+
+    public JournalEntryController(JournalService journalService, UserService userService) {
         this.journalService = journalService;
+        this.userService = userService;
     }
 
-    @GetMapping("/getAllJournal")
-    public ResponseEntity<List<Journal>> findAllJournal() {
-        List<Journal> journals = journalService.findAllJournal();
+    @GetMapping("/getAllJournal/{userid}")
+    public ResponseEntity<List<Journal>> findAllJournalOfUser(@PathVariable Long userid) {
+        User user = userService.findUserById(userid);
+        List<Journal> journals = user.getJournals();
         if (journals.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -34,10 +39,13 @@ public class JournalEntryController {
         return ResponseEntity.ok(journal);
     }
 
-    @PostMapping("/createJournal")
-    public ResponseEntity<Journal> createNewJournal(@RequestBody Journal journal) {
+    @PostMapping("/createJournal/{userid}")
+    public ResponseEntity<Journal> createNewJournal(@PathVariable Long userid, @RequestBody Journal journal) {
         try {
-            journalService.createNewJournal(journal);
+            User user = userService.findUserById(userid);
+            journalService.createNewJournal(userid, journal);
+            List<Journal> journals = user.getJournals();
+            user.setJournals(journals);
             return new ResponseEntity<>(journal, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -50,9 +58,19 @@ public class JournalEntryController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteJournal/{id}")
-    public ResponseEntity<?> deleteJournal(@PathVariable Long id) {
-        journalService.deleteJournal(id);
+    @DeleteMapping("/deleteJournal/{userid}")
+    public ResponseEntity<?> deleteJournal(@PathVariable Long userid) {
+        User user = userService.findUserById(userid);
+        List<Journal> allJournals = user.getJournals();
+        journalService.deleteAllJournals(allJournals);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/deleteAllJournal/{userid}")
+    public ResponseEntity<?> deleteAllJournal(@PathVariable Long userid) {
+        User user = userService.findUserById(userid);
+        List<Journal> allJournals = user.getJournals();
+        journalService.deleteAllJournals(allJournals);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

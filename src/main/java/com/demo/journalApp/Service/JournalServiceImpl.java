@@ -27,7 +27,7 @@ public class JournalServiceImpl implements JournalService {
                 .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + " not found"));
     }
 
-    public void createNewJournal(Journal journal) {
+    public void createNewJournal(Long userid, Journal journal) {
         journal.setDate(LocalDateTime.now());
         journalRepository.save(journal);
     }
@@ -47,6 +47,11 @@ public class JournalServiceImpl implements JournalService {
         Journal existingJournal = journalRepository.findById(id)
                 .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + " not found"));
         journalRepository.deleteById(existingJournal.getId());
+    }
+
+    @Override
+    public void deleteAllJournals(List<Journal> allJournals) {
+        journalRepository.deleteAll();
     }
 
 }
