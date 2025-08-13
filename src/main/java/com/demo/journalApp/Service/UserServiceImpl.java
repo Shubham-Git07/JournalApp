@@ -3,10 +3,11 @@ package com.demo.journalApp.Service;
 import com.demo.journalApp.Entity.User;
 import com.demo.journalApp.Exceptions.UserNotFoundException;
 import com.demo.journalApp.Repository.UserRepository;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
@@ -44,6 +45,11 @@ public class UserServiceImpl implements UserService {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("user with id " + id + " not found"));
         userRepository.deleteById(existingUser.getId());
+    }
+
+    @Override
+    public User findByUserName(String userName) {
+        return userRepository.findByUserName(userName);
     }
 
 }

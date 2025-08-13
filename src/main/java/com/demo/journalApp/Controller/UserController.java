@@ -34,25 +34,53 @@ public class UserController {
     }
 
     @PostMapping("/createNewUser")
-    public ResponseEntity<User> addNewUser(@RequestBody User user) {
+    public ResponseEntity<String> addNewUser(@RequestBody User user) {
         try {
             userService.createNewUser(user);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("user not created", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/updateUserById/{id}")
-    public ResponseEntity<User> updateUserById(@PathVariable Long id, @RequestBody User user) {
-        userService.updateUserById(id, user);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<String> updateUserById(@PathVariable Long id, @RequestBody User user) {
+        try {
+            userService.updateUserById(id, user);
+            return ResponseEntity.ok("User updated successfully");
+        }
+        catch (IllegalArgumentException e) { // Username already exists
+            return new ResponseEntity<>("username already exists", HttpStatus.BAD_REQUEST);
+        }
+        catch (RuntimeException e) { // User not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/updateUserByUserName")
+    public ResponseEntity<?> updateUserByUsername(@RequestBody User user) {
+        User userInDB = userService.findByUserName(user.getUserName());
+        if (userInDB == null) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        // Optional: Check if new username is taken
+        if (!user.getUserName().equals(userInDB.getUserName()) &&
+                userService.findByUserName(user.getUserName()) != null) {
+            return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
+        }
+
+        userInDB.setUserName(user.getUserName());
+        userInDB.setPassword(user.getPassword());
+        userService.updateUserById(userInDB.getId(), userInDB);
+
+        return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteUserById/{id}")
-    public ResponseEntity<User> deleteUserById(@PathVariable Long id) {
+    public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("user deleted successfully", HttpStatus.NO_CONTENT);
     }
 
 }
