@@ -1,8 +1,11 @@
 package com.demo.journalApp.Service;
 
 import com.demo.journalApp.Entity.Journal;
+import com.demo.journalApp.Entity.User;
 import com.demo.journalApp.Exceptions.JournalNotFoundException;
+import com.demo.journalApp.Exceptions.UserNotFoundException;
 import com.demo.journalApp.Repository.JournalRepository;
+import com.demo.journalApp.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,13 +15,15 @@ import java.util.List;
 public class JournalServiceImpl implements JournalService {
 
     private final JournalRepository journalRepository;
+    private final UserRepository userRepository;
 
-    public JournalServiceImpl(JournalRepository journalRepository) {
+    public JournalServiceImpl(JournalRepository journalRepository, UserRepository userRepository) {
         this.journalRepository = journalRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public List<Journal> findAllJournal() {
+    public List<Journal> findAllJournals() {
         return journalRepository.findAll();
     }
 
@@ -27,13 +32,17 @@ public class JournalServiceImpl implements JournalService {
                 .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + " not found"));
     }
 
-    public void createNewJournal(Long userid, Journal journal) {
+    public Journal createNewJournal(Long userid, Journal journal) {
+        User existingUser = userRepository.findById(userid)
+                .orElseThrow(() -> new UserNotFoundException("user with id " + userid + " not found"));
         journal.setDate(LocalDateTime.now());
-        journalRepository.save(journal);
+        journal.setUser(existingUser);
+        existingUser.getJournalEntries().add(journal);
+        return journalRepository.save(journal);
     }
 
     @Override
-    public void updateJournal(Long id, Journal journal) {
+    public void updateJournalById(Long id, Journal journal) {
         Journal existingJournal = journalRepository.findById(id)
                 .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + " not found"));
         existingJournal.setTitle(journal.getTitle());
@@ -43,15 +52,10 @@ public class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public void deleteJournal(Long id) {
-        Journal existingJournal = journalRepository.findById(id)
-                .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + " not found"));
+    public void deleteJournalById(Long jid) {
+        Journal existingJournal = journalRepository.findById(jid)
+                .orElseThrow(() -> new JournalNotFoundException("Journal with id " + jid + " not found"));
         journalRepository.deleteById(existingJournal.getId());
-    }
-
-    @Override
-    public void deleteAllJournals(List<Journal> allJournals) {
-        journalRepository.deleteAll();
     }
 
 }

@@ -1,9 +1,11 @@
 package com.demo.journalApp.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,12 +24,14 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Journal> journals;
+    @JsonManagedReference
+    private List<Journal> journalEntries = new ArrayList<>();
 }
 
 /*
 mappedBy = "user" → matches the field name in the Journal entity.
 cascade = CascadeType.ALL → when you save/delete a user, it applies to journals too.
-orphanRemoval = true → removing a journal from the list deletes it from DB.
+orphanRemoval = true → removing a journal from the list deletes it from DB and also deleted from respective
+userid.
 */
 

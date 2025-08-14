@@ -7,15 +7,14 @@ import java.util.List;
 
 public interface JournalService {
 
-    List<Journal> findAllJournal();
+    List<Journal> findAllJournals();
 
     Journal findJournalById(Long id);
 
-    void createNewJournal(Long userid, Journal journal);
+    Journal createNewJournal(Long userid, Journal journal);
 
-    void updateJournal(Long id, Journal journal);
+    void updateJournalById(Long id, Journal journal);
 
-    void deleteJournal(Long id);
+    void deleteJournalById(Long jid);
 
-    void deleteAllJournals(List<Journal> allJournals);
 }
