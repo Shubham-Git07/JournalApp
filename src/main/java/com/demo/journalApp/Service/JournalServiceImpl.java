@@ -7,6 +7,7 @@ import com.demo.journalApp.Exceptions.UserNotFoundException;
 import com.demo.journalApp.Repository.JournalRepository;
 import com.demo.journalApp.Repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,13 +33,20 @@ public class JournalServiceImpl implements JournalService {
                 .orElseThrow(() -> new JournalNotFoundException("Journal with id " + id + " not found"));
     }
 
+    @Transactional
     public Journal createNewJournal(Long userid, Journal journal) {
-        User existingUser = userRepository.findById(userid)
-                .orElseThrow(() -> new UserNotFoundException("user with id " + userid + " not found"));
-        journal.setDate(LocalDateTime.now());
-        journal.setUser(existingUser);
-        existingUser.getJournalEntries().add(journal);
-        return journalRepository.save(journal);
+        try {
+            User existingUser = userRepository.findById(userid)
+                    .orElseThrow(() -> new UserNotFoundException("user with id " + userid + " not found"));
+            journal.setDate(LocalDateTime.now());
+            journal.setUser(existingUser);
+//           journal.setUser(null); this will use @Transactional
+            existingUser.getJournalEntries().add(journal);
+            return journalRepository.save(journal);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException("An error occurred while saving an entity" + e);
+        }
     }
 
     @Override

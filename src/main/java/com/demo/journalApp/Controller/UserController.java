@@ -64,9 +64,8 @@ public class UserController {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
 
-        // Optional: Check if new username is taken
-        if (!user.getUserName().equals(userInDB.getUserName()) &&
-                userService.findByUserName(user.getUserName()) != null) {
+        User other = userService.findByUserName(user.getUserName());
+        if (other != null && !other.getId().equals(userInDB.getId())) {
             return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
         }
 
@@ -80,7 +79,7 @@ public class UserController {
     @DeleteMapping("/deleteUserById/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
-        return new ResponseEntity<>("user deleted successfully", HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
 }
