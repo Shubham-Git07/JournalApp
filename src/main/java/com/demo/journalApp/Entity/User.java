@@ -23,6 +23,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private List<String> roles;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Journal> journalEntries = new ArrayList<>();

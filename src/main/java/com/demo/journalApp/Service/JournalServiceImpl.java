@@ -40,7 +40,7 @@ public class JournalServiceImpl implements JournalService {
                     .orElseThrow(() -> new UserNotFoundException("user with id " + userid + " not found"));
             journal.setDate(LocalDateTime.now());
             journal.setUser(existingUser);
-//           journal.setUser(null); this will use @Transactional
+//            journal.setUser(null); // this will use @Transactional
             existingUser.getJournalEntries().add(journal);
             return journalRepository.save(journal);
         } catch (Exception e) {

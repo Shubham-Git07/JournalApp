@@ -3,6 +3,9 @@ package com.demo.journalApp.Service;
 import com.demo.journalApp.Entity.User;
 import com.demo.journalApp.Exceptions.UserNotFoundException;
 import com.demo.journalApp.Repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
